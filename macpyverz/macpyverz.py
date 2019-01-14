@@ -7,11 +7,77 @@ Created on Mon Jan 14 11:28:42 2019
 
 # import sys
 # import os
+import datetime
 import argparse
 import logging as lg
 
 import pygame.mixer
 from pygame import locals as pg_const
+
+from model import ZGame
+
+
+#def load_db(filename):
+#
+#    db = {}
+#
+##    print("\n[json-db] 'load_db' call \n");
+#
+#    try:
+#        with open(filename, "r") as myfile:
+#
+##            print(myfile)
+#
+#            try:
+#                db = json.load(myfile)
+#                if not db:      # is_empty(db):
+#                    raise Exception('Database is empty')        #DatabaseEmptyWarning('Database is empty')
+#
+#            except json.JSONDecodeError as err:
+#                print("\n# <Exception> ", err.args[0], "\n")
+#            except Exception as wrn:
+#                print(wrn)
+#            except:
+#                print("\n# <Exception> ", "Unexpected error:", sys.exc_info(), "\n#")
+#            finally:
+##                print("\n[json-db] 'json_load_db' exit \nDataBase: ", db);
+#                pass
+#
+#    except FileNotFoundError as err:
+#        print("\n# <Exception> ", err, "\n")
+#
+#    return db
+#
+#
+#
+#def save_db(json_file, db):
+#
+##    print("\n[json-db] 'save_db' call \n");
+#
+#    with open(json_file,"w") as myfile:
+##        print(myfile, "my file open w")
+#
+#        # Convert json to string
+#        f = json.dumps(db, indent=4, sort_keys=True, cls=ObjectEncoder)
+##        f = json.dumps(db, indent=4, sort_keys=True, default=ObjectEncoder().default)
+##        print(f)
+##        print("json dump")
+#
+#        # save into file
+#        myfile.write(f)
+#
+#
+#
+#class ObjectEncoder(json.JSONEncoder):
+#    def default(self, obj):
+#        if isinstance(obj, (datetime.datetime, datetime.date)):
+#            return obj.isoformat()
+#        elif hasattr(obj, "to_dict"):
+#            return obj.to_dict()
+#
+#
+#        return json.JSONEncoder.default(self, obj)
+
 
 
 def parse_arguments():
@@ -46,6 +112,14 @@ if __name__ == '__main__':
 
     lg.info('Start Application')
 
+
+
+    g = ZGame()
+    g.init_playground()
+
+
+
+
     pygame.init()
 
     pygame.key.set_repeat(400, 30)
@@ -54,6 +128,8 @@ if __name__ == '__main__':
 
 #    fond = pygame.image.load("background.jpg").convert()
 #    main_win.blit(fond, (0,0))
+
+    playground_view = main_win
 
 
     wall_surf = pygame.image.load("structures.png").convert_alpha()
@@ -69,7 +145,20 @@ if __name__ == '__main__':
     wall_top_left_pos = wall_top_left_surf.get_rect()
     print(wall_top_left_pos)
 #    wall_top_left_pos = wall_top_left_surf.get_rect().move(50,50)
-    main_win.blit(wall_top_left_surf, wall_top_left_pos)
+#    main_win.blit(wall_top_left_surf, wall_top_left_pos)
+    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
+    wall_top_left_pos = wall_top_left_pos.move(0,1*64)
+    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
+    wall_top_left_pos = wall_top_left_pos.move(0,2*64)
+    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
+    wall_top_left_pos = wall_top_left_pos.move(0,3*64)
+    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
+    wall_top_left_pos = wall_top_left_pos.move(0,4*64)
+    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
+    wall_top_left_pos = wall_top_left_pos.move(0,5*64)
+    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
+    wall_top_left_pos = wall_top_left_pos.move(0,6*64)
+    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
 
 
     hero_surf = pygame.image.load("MacGyver.png").convert_alpha()
@@ -77,14 +166,18 @@ if __name__ == '__main__':
     hero_pos = hero_surf.get_rect()
     hero_pos = hero_pos.move(120,120)
     print(hero_pos)
-    main_win.blit(hero_surf, hero_pos)
+#    main_win.blit(hero_surf, hero_pos)
+    playground_view.blit(hero_surf, hero_pos)
 
     guard_surf = pygame.image.load("Gardien.png").convert_alpha()
     guard_surf = pygame.transform.scale(guard_surf, (32,32))
 #    guard_pos = guard_surf.get_rect()
     guard_pos = guard_surf.get_rect().move(50,50)
 
-    main_win.blit(guard_surf, guard_pos)
+#    main_win.blit(guard_surf, guard_pos)
+    playground_view.blit(guard_surf, guard_pos)
+
+    main_win.blit(playground_view, playground_view.get_rect())
 
     pygame.display.flip()
 
@@ -115,11 +208,13 @@ if __name__ == '__main__':
 
 #        main_win.blit(fond, (0,0))
 #        main_win.blit(wall_surf, wall_pos)
-        main_win.blit(wall_top_left_surf, wall_top_left_pos)
+        playground_view.blit(wall_top_left_surf, wall_top_left_pos)
 
 #        print(hero_pos)
-        main_win.blit(hero_surf, hero_pos)
-        main_win.blit(guard_surf, guard_pos)
+        playground_view.blit(hero_surf, hero_pos)
+        playground_view.blit(guard_surf, guard_pos)
+
+        main_win.blit(playground_view, playground_view.get_rect())
 
         pygame.display.flip()
 
