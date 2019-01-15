@@ -50,8 +50,5 @@ class ZGame(object):
 
 if __name__ == '__main__':
 
-    g = ZGame()
-    g.init_playground()
-
-
-
+    game = ZGame()
+    game.init_playground()
