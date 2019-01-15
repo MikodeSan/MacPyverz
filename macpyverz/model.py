@@ -92,30 +92,36 @@ class ZGame():
             if hero_pos_y > 0:
                 print('Playground', self.__playground[hero_pos_y-1][hero_pos_x])
                 if self.__playground[hero_pos_y-1][hero_pos_x] != 'w':
-                    self.__hero_pos_y = hero_pos_y - 1
+                    hero_pos_y = hero_pos_y - 1
 
         if direction == 'right':
             if hero_pos_x < self.__playground_size[0] - 1:
                 print('Playground', self.__playground[hero_pos_y][hero_pos_x+1])
                 if self.__playground[hero_pos_y][hero_pos_x+1] != 'w':
-                    self.__hero_pos_x = hero_pos_x + 1
+                    hero_pos_x = hero_pos_x + 1
 
         if direction == 'down':
             if hero_pos_y < self.__playground_size[1] - 1:
                 print('Playground', self.__playground[hero_pos_y+1][hero_pos_x])
                 if self.__playground[hero_pos_y+1][hero_pos_x] != 'w':
-                    self.__hero_pos_y = hero_pos_y + 1
+                    hero_pos_y = hero_pos_y + 1
 
         if direction == 'left':
             if hero_pos_x > 0:
                 print('Playground', self.__playground[hero_pos_y][hero_pos_x-1])
                 if self.__playground[hero_pos_y][hero_pos_x-1] != 'w':
-                    self.__hero_pos_x = hero_pos_x - 1
+                    hero_pos_x = hero_pos_x - 1
 
 
         self.__hero_direction = direction
         print('Hero position [{}, {}]'.format(self.__hero_pos_x, self.__hero_pos_y))
 
+        self.__hero_pos_x = hero_pos_x
+        self.__hero_pos_y = hero_pos_y
+
+
+        if self.__playground[hero_pos_y][hero_pos_x] == 'o':
+            message = ('win', 0)
 
         return message, (self.__hero_pos_x, self.__hero_pos_y), direction
 

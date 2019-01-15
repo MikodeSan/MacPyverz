@@ -180,8 +180,10 @@ if __name__ == '__main__':
 
 
     flag = False
+    msg = ('', 0)
 
     while(flag == False):
+
 
         for event in pygame.event.get():
 
@@ -218,6 +220,11 @@ if __name__ == '__main__':
         main_win.blit(guard_surf, guard_pos)
 
         pygame.display.flip()
+
+
+        if msg[0] == 'win':
+            print('!!! You Win !!!')
+            flag = True
 
 
 
