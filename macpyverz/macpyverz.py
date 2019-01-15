@@ -79,6 +79,7 @@ from model import ZGame
 #        return json.JSONEncoder.default(self, obj)
 
 
+ASSET_SIZE=32
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -151,31 +152,11 @@ if __name__ == '__main__':
 
             if sprite == 'w':
 
-                playground_view.blit(wall_top_left_surf, (sprite_idx*32,row_idx*32))
+                playground_view.blit(wall_top_left_surf, (sprite_idx*ASSET_SIZE,row_idx*ASSET_SIZE))
 
 
 
     main_win.blit(playground_view, playground_view.get_rect())
-
-
-
-
-#    wall_top_left_pos = wall_top_left_surf.get_rect().move(50,50)
-#    main_win.blit(wall_top_left_surf, wall_top_left_pos)
-#    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
-#    wall_top_left_pos = wall_top_left_pos.move(0,1*64)
-#    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
-#    wall_top_left_pos = wall_top_left_pos.move(0,2*64)
-#    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
-#    wall_top_left_pos = wall_top_left_pos.move(0,3*64)
-#    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
-#    wall_top_left_pos = wall_top_left_pos.move(0,4*64)
-#    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
-#    wall_top_left_pos = wall_top_left_pos.move(0,5*64)
-#    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
-#    wall_top_left_pos = wall_top_left_pos.move(0,6*64)
-#    playground_view.blit(wall_top_left_surf, wall_top_left_pos)
-
 
     hero_surf = pygame.image.load("MacGyver.png").convert_alpha()
     hero_surf = pygame.transform.scale(hero_surf, (32,32))
@@ -210,16 +191,20 @@ if __name__ == '__main__':
             if event.type == pg_const.KEYDOWN:
 
                 if event.key == pg_const.K_DOWN:
-                    hero_pos = hero_pos.move(0,3)
+                    msg, hero_pos, b = game_mdl.move_hero('down')
+#                    hero_pos = hero_pos.move(0,3)
 
                 if event.key == pg_const.K_UP:
-                    hero_pos = hero_pos.move(0,-3)
+                    msg, hero_pos, b = game_mdl.move_hero('up')
+#                    hero_pos = hero_pos.move(0,-3)
 
                 if event.key == pg_const.K_LEFT:
-                    hero_pos = hero_pos.move(-3,0)
+                    msg, hero_pos, b = game_mdl.move_hero('left')
+#                    hero_pos = hero_pos.move(-3,0)
 
                 if event.key == pg_const.K_RIGHT:
-                    hero_pos = hero_pos.move(3,0)
+                    msg, hero_pos, b = game_mdl.move_hero('right')
+#                    hero_pos = hero_pos.move(3,0)
 
 
 #        main_win.blit(fond, (0,0))
@@ -229,7 +214,7 @@ if __name__ == '__main__':
 #        print(hero_pos)
 
         main_win.blit(playground_view, playground_view.get_rect())
-        main_win.blit(hero_surf, hero_pos)
+        main_win.blit(hero_surf, (ASSET_SIZE*hero_pos[0], ASSET_SIZE*hero_pos[1]))
         main_win.blit(guard_surf, guard_pos)
 
         pygame.display.flip()
