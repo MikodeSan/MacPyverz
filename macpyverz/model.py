@@ -5,6 +5,7 @@ Created on Mon Jan 14 20:53:56 2019
 @author: Asus
 """
 
+#import logging as lg
 from random import randrange
 
 
@@ -15,22 +16,20 @@ class ZGame():
 
     WALL = 'w'
 
-    def __init__(self):
+    def __init__(self, log):
         '''
         Constructor
         '''
 
-        # Credit
+        # Init. logging
+        self.__log = log
+
         self.__playground = []
         self.__playground_size = ()
         self.__hero = None
-        self.__hero_pos_x = 0
-        self.__hero_pos_y = 0
         self.__hero_direction = 'r'
         self.__path = []
-        self.__asset_lst = []
-#        self.__guard = None
-#        self.__element = None
+        self.__asset_dct = {}
 
 
     @property
@@ -44,9 +43,9 @@ class ZGame():
         return self.__playground_size
 
     @property
-    def asset_lst(self):
+    def assets(self):
         """getter"""
-        return self.__asset_lst
+        return self.__asset_dct
 
     def init_playground(self):
 
@@ -56,41 +55,45 @@ class ZGame():
         self.__playground_size = ()
 
         filename = "level.dat"
-        with open(filename, "r") as file:
-            self.__playground = []
 
-            for line_idx, line in enumerate(file):
 
-                row = []
+        try:
+            with open(filename, "r") as file:
+                self.__playground = []
 
-                for sprite_idx, sprite in enumerate(line):
+                for line_idx, line in enumerate(file):
 
-                    if sprite_idx == 0:
-                        sprt_idx_0 = len(line.replace('\n', ''))
+                    row = []
 
-                    if sprite != '\n':
-                        row.append(sprite)
+                    for sprite_idx, sprite in enumerate(line):
 
-                    if sprite == 'i':
-                        self.__hero_pos_x = sprite_idx
-                        self.__hero_pos_y = line_idx
-                        self.__asset_lst.append({'type':'hero', 'pos_x':sprite_idx, 'pos_y':line_idx})
-                        print('Hero initial position [{}, {}]'.format(self.__hero_pos_x, self.__hero_pos_y))
+                        if sprite_idx == 0:
+                            sprt_idx_0 = len(line.replace('\n', ''))
 
-                    if sprite == 'o':
-                        self.__asset_lst.append({'type':'guard', 'pos_x':sprite_idx, 'pos_y':line_idx})
-                        print('Guard initial position [{}, {}]'.format(sprite_idx, line_idx))
+                        if sprite != '\n':
+                            row.append(sprite)
 
-                    if sprite == 'p':
-                        self.__path.append( (sprite_idx, line_idx) )
+                            if sprite == 'i':
+                                self.__asset_dct['hero'] = {'pos_x':sprite_idx, 'pos_y':line_idx}
+                                self.__log.debug('Hero initial position [{}, {}]'.format(self.__asset_dct['hero']['pos_x'], self.__asset_dct['hero']['pos_y']))
 
-                self.__playground.append(row)
+                            if sprite == 'o':
+                                self.__asset_dct['guard'] = {'pos_x':sprite_idx, 'pos_y':line_idx}
+                                self.__log.debug('Guard initial position [{}, {}]'.format(sprite_idx, line_idx))
+
+                            if sprite == 'p':
+                                self.__path.append( (sprite_idx, line_idx) )
+
+                    self.__playground.append(row)
+
+        except FileNotFoundError as err:
+            self.__log.critical("\n# <Exception> {} \n".format(err))
 
 
         n_row = line_idx+1
-        print("N row(s)", n_row)
+        self.__log.debug("N row(s): {}".format(n_row))
         n_column = sprt_idx_0
-        print("N column(s)", n_column)
+        self.__log.debug("N column(s): {}".format(n_column))
 
         self.__playground_size = (n_column, n_row)
 
@@ -106,8 +109,8 @@ class ZGame():
             pos_x = self.__path[pos_idx][0]
             pos_y = self.__path[pos_idx][1]
 
-#            self.__playground[pos_y][pos_x] = asset
-            self.__asset_lst.append({'type':asset, 'pos_x':pos_x, 'pos_y':pos_y})
+            self.__asset_dct[asset] = {'pos_x':pos_x, 'pos_y':pos_y}
+            self.__playground[pos_y][pos_x] = asset
 
             del self.__path[pos_idx]
             path_len = path_len - 1
@@ -117,45 +120,55 @@ class ZGame():
 
         message = ('', 0)
 
-        hero_pos_x = self.__hero_pos_x
-        hero_pos_y = self.__hero_pos_y
+        hero_pos_x = self.__asset_dct['hero']['pos_x']
+        hero_pos_y = self.__asset_dct['hero']['pos_y']
 
         if direction == 'up':
             if hero_pos_y > 0:
-                print('Playground', self.__playground[hero_pos_y-1][hero_pos_x])
+                self.__log.debug('Expected playground {}'.format(self.__playground[hero_pos_y-1][hero_pos_x]))
                 if self.__playground[hero_pos_y-1][hero_pos_x] != self.WALL:
                     hero_pos_y = hero_pos_y - 1
 
         if direction == 'right':
             if hero_pos_x < self.__playground_size[0] - 1:
-                print('Playground', self.__playground[hero_pos_y][hero_pos_x+1])
+                self.__log.debug('Expected playground {}'.format(self.__playground[hero_pos_y][hero_pos_x+1]))
                 if self.__playground[hero_pos_y][hero_pos_x+1] != self.WALL:
                     hero_pos_x = hero_pos_x + 1
 
         if direction == 'down':
             if hero_pos_y < self.__playground_size[1] - 1:
-                print('Playground', self.__playground[hero_pos_y+1][hero_pos_x])
+                self.__log.debug('Expected playground {}'.format(self.__playground[hero_pos_y+1][hero_pos_x]))
                 if self.__playground[hero_pos_y+1][hero_pos_x] != self.WALL:
                     hero_pos_y = hero_pos_y + 1
 
         if direction == 'left':
             if hero_pos_x > 0:
-                print('Playground', self.__playground[hero_pos_y][hero_pos_x-1])
+                self.__log.debug('Expected playground {}'.format(self.__playground[hero_pos_y][hero_pos_x-1]))
                 if self.__playground[hero_pos_y][hero_pos_x-1] != self.WALL:
                     hero_pos_x = hero_pos_x - 1
 
 
         self.__hero_direction = direction
-        print('Hero position [{}, {}]'.format(self.__hero_pos_x, self.__hero_pos_y))
+        self.__log.debug('Hero position [{}, {}] on playground {}'.format(hero_pos_x, hero_pos_y, self.__playground[hero_pos_y][hero_pos_x]))
 
-        self.__hero_pos_x = hero_pos_x
-        self.__hero_pos_y = hero_pos_y
+        self.__asset_dct['hero']['pos_x'] = hero_pos_x
+        self.__asset_dct['hero']['pos_y'] = hero_pos_y
 
+        asset_type = self.__playground[hero_pos_y][hero_pos_x]
+        if asset_type in ['n','t','e']:
+            del self.__asset_dct[asset_type]
+            self.__playground[hero_pos_y][hero_pos_x] = 'p'
+            self.__log.debug('{}'.format(self.__asset_dct))
+            message = ('object', 0)
 
         if self.__playground[hero_pos_y][hero_pos_x] == 'o':
-            message = ('win', 0)
+            if any(k in ['n','t','e'] for k in self.__asset_dct.keys()):
 
-        return message, (self.__hero_pos_x, self.__hero_pos_y), direction
+                message = ('end',False)
+            else:
+                message = ('end',True)
+
+        return message, (hero_pos_x, hero_pos_y), direction
 
 
 if __name__ == '__main__':
