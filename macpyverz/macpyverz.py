@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jan 14 11:28:42 2019
@@ -45,15 +46,6 @@ if __name__ == '__main__':
 
     lg.info('Start Application')
 
-
     view = ZView(lg)
     view.refresh_playground()
     view.run()
-
-#------------------------------------------------------------------------------
-
-
-
-
-
-
