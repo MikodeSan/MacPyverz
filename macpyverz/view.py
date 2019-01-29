@@ -21,14 +21,17 @@ class ZView():
     classdocs
     '''
 
-    main_win = pygame.display.set_mode((480, 480))       # , pg_const.RESIZABLE
+    main_win = pygame.display.set_mode((480, 480 + ASSET_SIZE))
+    # , pg_const.RESIZABLE
     playground_surf = pygame.image.load("background.jpg").convert()
     hero_surf = pygame.image.load("MacGyver.png").convert_alpha()
     guard_surf = pygame.image.load("Gardien.png").convert_alpha()
     needle_surf = pygame.image.load("aiguille.png").convert_alpha()
-    ether_surf = pygame.image.load("ether.png").convert_alpha()
+    ether_surf = pygame.image.load("ether.png")
+    ether_surf.set_colorkey((1, 1, 1))
     syringe_surf = pygame.image.load("seringue.png").convert_alpha()
-    tube_surf = pygame.image.load("tube_plastique.png").convert_alpha()
+    tube_surf = pygame.image.load("tube_plastique.png")
+    tube_surf.set_colorkey((255, 255, 255))
 
     def __init__(self, log):
         '''
@@ -53,11 +56,11 @@ class ZView():
 
         # - Crop an element
         wall_top_left_surf = pygame.transform.chop(
-                pygame.transform.chop(wall_surf,
-                                      (64, 64,
-                                       wall_surf.get_width()-64,
-                                       wall_surf.get_height()-64)),
-                (0, 0, 32, 32))
+            pygame.transform.chop(wall_surf,
+                                  (64, 64,
+                                   wall_surf.get_width()-64,
+                                   wall_surf.get_height()-64)),
+            (0, 0, 32, 32))
         self.__log.debug('{}'.format(wall_top_left_surf))
         wall_top_left_pos = wall_top_left_surf.get_rect()
         self.__log.debug('{}'.format(wall_top_left_pos))
@@ -67,7 +70,10 @@ class ZView():
             for sprite_idx, sprite in enumerate(row):
 
                 if sprite == 'w':
-                    self.playground_surf.blit(wall_top_left_surf, (sprite_idx*ASSET_SIZE, row_idx*ASSET_SIZE))
+                    self.playground_surf.blit(wall_top_left_surf,
+                                              (sprite_idx*ASSET_SIZE,
+                                               row_idx*ASSET_SIZE)
+                                              )
 
         # Init. hero surface
         self.hero_surf = pygame.transform.scale(self.hero_surf,
@@ -98,7 +104,8 @@ class ZView():
         docstring
         '''
 
-        self.main_win.blit(self.playground_surf, self.playground_surf.get_rect())
+        self.main_win.blit(self.playground_surf,
+                           self.playground_surf.get_rect())
 
         for type_key, asset in self.game_mdl.assets.items():
 
@@ -158,15 +165,43 @@ class ZView():
                         msg = self.game_mdl.move_hero('right')
     #                    hero_pos = hero_pos.move(3,0)
 
+                    if msg[0] == 'object':
+
+                        print('object msg')
+                        if msg[1] == 'n':
+                            self.main_win.blit(self.needle_surf, (0, 480))
+                            print('needle msg')
+
+                        if msg[1] == 't':
+                            self.main_win.blit(self.tube_surf, (1*ASSET_SIZE,
+                                                                480))
+                            print('tube msg')
+
+                        if msg[1] == 'e':
+                            self.main_win.blit(self.ether_surf, (2*ASSET_SIZE,
+                                                                 480))
+                            print('ether msg')
+
+                        if msg[1] == 's':
+                            self.main_win.blit(self.needle_surf, (0, 480))
+                            self.main_win.blit(self.tube_surf,
+                                               (1*ASSET_SIZE, 480))
+                            self.main_win.blit(self.ether_surf,
+                                               (2*ASSET_SIZE, 480))
+                            self.main_win.blit(self.syringe_surf,
+                                               (4*ASSET_SIZE, 480))
+
+                            print('seringe msg')
+
+                    if msg[0] == 'end':
+                        flag = True
+
+                        if msg[1] is True:
+                            print('\\o/ You Win \\o/')
+                        else:
+                            print('X_X You Lose X_X')
+
                     self.refresh_playground()
-
-            if msg[0] == 'end':
-                flag = True
-
-                if msg[1] is True:
-                    print('\\o/ You Win \\o/')
-                else:
-                    print('X_X You Lose X_X')
 
 
 if __name__ == '__main__':
